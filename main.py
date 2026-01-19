@@ -27,7 +27,7 @@ os.makedirs(out_dir, exist_ok=True)
 output_file = os.path.join(out_dir, f"{base_name}.wav")
 
 # Load model (sama seperti sebelumnya)
-voice = PiperVoice.load(model_path, config_path=config_path, use_cuda=True)
+voice = PiperVoice.load(model_path, config_path=config_path)
 
 # Ubah length_scale di config untuk mengatur kecepatan
 voice.config.length_scale = SPEED
