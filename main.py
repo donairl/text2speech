@@ -1,24 +1,36 @@
 import os
+import sys
 import wave
 from piper import PiperVoice
 
 model_path = "models/id_ID-news_tts-medium.onnx"  # atau ganti ke id_ID-gadis-medium.onnx jika itu yang dipakai di CLI
 config_path = "models/id_ID-news_tts-medium.onnx.json"  # pastikan ada
 
-output_file = "wav/hasil_suara.wav"
-
 # Parameter kecepatan suara (speed)
 # 1.0 = normal, > 1.0 = lebih lambat, < 1.0 = lebih cepat
 # Contoh: 0.8 = cepat, 1.2 = lambat
 SPEED = 1.2  # Ubah nilai ini untuk mengatur kecepatan
 
+# Ambil nama file teks dari argumen CLI
+if len(sys.argv) < 2:
+    raise SystemExit("Usage: python main.py <input_text_file.txt>")
+
+text_path = sys.argv[1]
+
+with open(text_path, "r", encoding="utf-8") as f:
+    teks = f.read().strip()
+
+# Nama output WAV mengikuti nama file teks
+base_name = os.path.splitext(os.path.basename(text_path))[0]
+out_dir = "wav"
+os.makedirs(out_dir, exist_ok=True)
+output_file = os.path.join(out_dir, f"{base_name}.wav")
+
 # Load model (sama seperti sebelumnya)
-voice = PiperVoice.load(model_path, config_path=config_path,use_cuda=True)
+voice = PiperVoice.load(model_path, config_path=config_path, use_cuda=True)
 
 # Ubah length_scale di config untuk mengatur kecepatan
 voice.config.length_scale = SPEED
-
-teks = "Halo Selamat sore ..., Surabaya adalah kota pelabuhan terbesar di Indonesia. Dan tempat paling identik dengan Surabaya adalah makanan yang enak yang dijual di sepanjang jalan"
 
 SAMPLE_RATE = voice.config.sample_rate  # Ini 22050 seperti print Anda
 CHANNELS = 1  # mono, standar piper
